@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Prescription | Doctor Digital Pad</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb; --primary-dark: #1e40af; --primary-light: #eff6ff;
+            --secondary: #0ea5e9; --text-dark: #0f172a; --text-light: #64748b;    
+            --bg-color: #f8fafc; --white: #ffffff; --border-color: #e2e8f0; --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Navbar Style */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+        .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .logo-wrapper {
+            display: flex; align-items: center; justify-content: center; padding: 4px; 
+            background: linear-gradient(135deg, #ffffff, #f1f5f9); border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .logo-img { width: 45px; height: 45px; object-fit: contain; border-radius: 10px; }
+        .logo-text { font-size: 20px; font-weight: 800; color: var(--text-dark); line-height: 1.1; }
+        .logo-text span { color: var(--primary); display: block; font-size: 14px; font-weight: 600; }
+        
+        .btn-nav {
+            background: var(--primary); color: var(--white); padding: 10px 24px; border-radius: 8px; 
+            font-weight: 600; text-decoration: none; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Download Section Style */
+        .download-container {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            padding: 150px 20px 80px; background: linear-gradient(180deg, #e0f2fe 0%, var(--white) 100%);
+        }
+        .download-card {
+            background: var(--white); padding: 40px 30px; border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            text-align: center; max-width: 450px; width: 100%;
+        }
+        .download-card h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+        .download-card p { color: var(--text-light); margin-bottom: 30px; font-size: 1rem; line-height: 1.5; }
+        
+        .btn-download {
+            width: 100%; padding: 16px; background: var(--success); color: white; border: none; 
+            border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-download:hover { background: #059669; transform: translateY(-2px); }
+        .btn-download:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        .status-msg { margin-top: 15px; font-size: 0.95rem; font-weight: 500; }
+
+        /* Footer Style */
+        footer { background: #020617; color: #cbd5e1; padding: 40px 5%; text-align: center; font-size: 0.9rem; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="brand">
+            <div class="logo-wrapper">
+                <img src="../logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            </div>
+            <div class="logo-text">Doctor Digital <span>Pad</span></div>
+        </a>
+        <a href="../index.html" class="btn-nav">Back to Home</a>
+    </nav>
+
+    <div class="download-container">
+        <div class="download-card">
+            <i class="fa-solid fa-file-prescription" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>Your Prescription</h2>
+            <p>Your digital prescription has been generated securely. Click below to save it to your device.</p>
+            
+            <button id="downloadBtn" class="btn-download" disabled>
+                <i class="fa-solid fa-spinner fa-spin"></i> Fetching Document...
+            </button>
+            <div id="statusText" class="status-msg" style="color: var(--text-light);">Connecting to secure server...</div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Doctor Digital Pad. A software product of Suraj Enterprises. All rights reserved.
+    </footer>
+
+    <script>
+        // 🟢 YAHAN APNI FIREBASE CONFIGURATION DAALEIN
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // URL se ID nikalna
+        const urlParams = new URLSearchParams(window.location.search);
+        // MSG91 link mein agar ID id=xyz ya seedha ?xyz ki tarah aati hai, usko handle karna:
+        const docId = urlParams.get('id') || window.location.search.replace('?', '').split('=')[1];
+        
+        let pdfBase64Data = "";
+        let pdfFileName = "Prescription.pdf";
+
+        const btn = document.getElementById('downloadBtn');
+        const statusText = document.getElementById('statusText');
+
+        if (!docId) {
+            statusText.innerText = "Invalid Link: Prescription ID is missing.";
+            statusText.style.color = "red";
+            btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
+        } else {
+            // Fetch from Firestore
+            db.collection("PrescriptionPDFs").doc(docId).get().then((doc) => {
+                if (doc.exists) {
+                    pdfBase64Data = doc.data().pdf_base64;
+                    pdfFileName = doc.data().file_name || "Prescription.pdf";
+                    
+                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Download PDF';
+                    btn.disabled = false;
+                    statusText.innerText = "Ready to download securely.";
+                    statusText.style.color = "var(--success)";
+                } else {
+                    statusText.innerText = "Prescription not found or link expired.";
+                    statusText.style.color = "red";
+                    btn.innerHTML = '<i class="fa-solid fa-ban"></i> Not Found';
+                }
+            }).catch((error) => {
+                console.log("Error:", error);
+                statusText.innerText = "Error fetching document.";
+                statusText.style.color = "red";
+                btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
+            });
+        }
+
+        // Base64 to PDF Download Logic
+        btn.addEventListener('click', () => {
+            if (!pdfBase64Data) return;
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+            
+            const byteCharacters = atob(pdfBase64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], {type: 'application/pdf'});
+
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = pdfFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded Successfully';
+            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Again'; }, 3000);
+        });
+    </script>
+</body>
+</html>
