@@ -99,27 +99,22 @@
     </footer>
 
     <script>
-        // 🟢 YAHAN APNI FIREBASE CONFIGURATION DAALEIN
+        // 🟢 YAHAN APNI ASLI FIREBASE CONFIGURATION ZAROOR DAALEIN
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyA2WB6kcN9BvAOpByZEg2qn24LhZJ6g86g",
+            authDomain: "doctordigitalpad-f30ed.firebaseapp.com",
+            projectId: "doctordigitalpad-f30ed",
+            storageBucket: "doctordigitalpad-f30ed.appspot.com",
+            messagingSenderId: "820063667055",
+            appId: "1:820063667055:android:77ae37e1f620c881109e9a"
         };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // URL se ID nikalna
         const urlParams = new URLSearchParams(window.location.search);
-        // MSG91 link mein agar ID id=xyz ya seedha ?xyz ki tarah aati hai, usko handle karna:
         const docId = urlParams.get('id') || window.location.search.replace('?', '').split('=')[1];
         
-        let pdfBase64Data = "";
-        let pdfFileName = "Prescription.pdf";
-
         const btn = document.getElementById('downloadBtn');
         const statusText = document.getElementById('statusText');
 
@@ -128,16 +123,37 @@
             statusText.style.color = "red";
             btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
         } else {
-            // Fetch from Firestore
+            // Firestore se fetch karna
             db.collection("PrescriptionPDFs").doc(docId).get().then((doc) => {
                 if (doc.exists) {
-                    pdfBase64Data = doc.data().pdf_base64;
-                    pdfFileName = doc.data().file_name || "Prescription.pdf";
+                    let pdfBase64Data = doc.data().pdf_base64;
+                    let pdfFileName = doc.data().file_name || "Prescription.pdf";
                     
-                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Download PDF';
-                    btn.disabled = false;
-                    statusText.innerText = "Ready to download securely.";
+                    statusText.innerText = "Opening your prescription automatically...";
                     statusText.style.color = "var(--success)";
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening PDF...';
+                    
+                    // 🟢 AUTO-OPEN / AUTO-DOWNLOAD LOGIC
+                    setTimeout(() => {
+                        const byteCharacters = atob(pdfBase64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], {type: 'application/pdf'});
+                        
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = pdfFileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> PDF Opened / Saved';
+                        btn.disabled = false;
+                    }, 1000); // 1 second ka delay taaki loading animation dikhe
+
                 } else {
                     statusText.innerText = "Prescription not found or link expired.";
                     statusText.style.color = "red";
@@ -145,35 +161,15 @@
                 }
             }).catch((error) => {
                 console.log("Error:", error);
-                statusText.innerText = "Error fetching document.";
+                statusText.innerText = "Error fetching document. Contact Clinic.";
                 statusText.style.color = "red";
                 btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
             });
         }
-
-        // Base64 to PDF Download Logic
+        
+        // Agar automatically open na ho, toh user button click kar sake
         btn.addEventListener('click', () => {
-            if (!pdfBase64Data) return;
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
-            
-            const byteCharacters = atob(pdfBase64Data);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], {type: 'application/pdf'});
-
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = pdfFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded Successfully';
-            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Again'; }, 3000);
+            window.location.reload();
         });
     </script>
 </body>
