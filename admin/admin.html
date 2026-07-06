@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - All Prescriptions</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .pdf-list { list-style: none; padding: 0; }
+        .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; }
+        .pdf-item:hover { background: #f8fafc; }
+        .btn { background: #10b981; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #059669; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Doctor Digital Pad - Admin Dashboard</h2>
+    <p>Saari generate ki hui PDFs yahan dikhengi.</p>
+    <ul id="pdfList" class="pdf-list">
+        <li>Loading PDFs...</li>
+    </ul>
+</div>
+
+<script>
+    // Aapki Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyA2WB6kcN9BvAOpByZEg2qn24LhZJ6g86g",
+        authDomain: "doctordigitalpad-f30ed.firebaseapp.com",
+        projectId: "doctordigitalpad-f30ed",
+        storageBucket: "doctordigitalpad-f30ed.appspot.com",
+        messagingSenderId: "820063667055",
+        appId: "1:820063667055:android:77ae37e1f620c881109e9a"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const listElement = document.getElementById('pdfList');
+
+    // Firestore se saara data uthana (Naya pehle)
+    db.collection("PrescriptionPDFs").orderBy("created_at", "desc").get().then((snapshot) => {
+        listElement.innerHTML = ""; // Clear loading text
+        if (snapshot.empty) {
+            listElement.innerHTML = "<li>No prescriptions found.</li>";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const date = data.created_at ? data.created_at.toDate().toLocaleString() : "Unknown Time";
+            
+            const li = document.createElement("li");
+            li.className = "pdf-item";
+            li.innerHTML = `
+                <div>
+                    <strong>${data.file_name || "Prescription.pdf"}</strong> <br>
+                    <small style="color: gray;">Date: ${date}</small>
+                </div>
+                <button class="btn" onclick="downloadPDF('${data.pdf_base64}', '${data.file_name}')">Download</button>
+            `;
+            listElement.appendChild(li);
+        });
+    }).catch(error => {
+        console.error("Error loading data:", error);
+        listElement.innerHTML = "<li>Error loading PDFs. Please check rules or internet.</li>";
+    });
+
+    // Base64 ko PDF bana kar download karwana
+    function downloadPDF(base64Data, fileName) {
+        if (!base64Data) { alert("PDF data is empty!"); return; }
+        
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {type: 'application/pdf'});
+
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName || 'Prescription.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
