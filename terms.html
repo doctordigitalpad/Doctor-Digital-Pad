@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | Doctor Digital Pad</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Premium SAAS Variables */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --secondary: #0ea5e9;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden; }
+
+        /* Premium Glassmorphism Navbar */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+        .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        
+        .logo-wrapper {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            padding: 4px; background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+            border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease;
+        }
+        .logo-wrapper:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25); }
+        .logo-img { width: 55px; height: 55px; object-fit: contain; border-radius: 10px; }
+        .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; color: var(--text-dark); line-height: 1.1; }
+        .logo-text span { color: var(--primary); display: block; font-size: 16px; font-weight: 600; letter-spacing: 0; }
+        
+        .nav-links { list-style: none; display: flex; gap: 35px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-light); font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        
+        .btn-nav {
+            background: var(--primary); color: var(--white) !important;
+            padding: 10px 24px; border-radius: 8px; font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); transition: 0.3s;
+        }
+        .btn-nav:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
+
+        /* Policy Content Styling */
+        .policy-container {
+            padding: 140px 5% 80px; 
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .policy-wrapper {
+            background: var(--white);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+        .policy-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .policy-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .policy-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .policy-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+        .policy-content p {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        .policy-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        .policy-content li {
+            margin-bottom: 10px;
+        }
+        .policy-content strong {
+            color: var(--text-dark);
+        }
+
+        /* Footer */
+        footer { background: #020617; color: #cbd5e1; padding: 80px 5% 30px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 50px; margin-bottom: 60px; }
+        .footer-col h3 { color: var(--white); font-size: 1.2rem; margin-bottom: 25px; font-weight: 600; }
+        .footer-col p { margin-bottom: 12px; line-height: 1.6; }
+        .footer-col i { width: 25px; color: var(--primary); }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid #334155; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .policy-wrapper { padding: 30px 20px; }
+            .policy-header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="brand">
+            <div class="logo-wrapper">
+                <img src="logo.png" alt="Logo" class="logo-img" id="mainLogo" onerror="this.style.display='none'">
+            </div>
+            <div class="logo-text">Doctor Digital <span>Pad Platform</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#how-it-works">Workflow</a></li>
+            <li><a href="index.html#features">Features</a></li>
+            <li><a href="index.html#security">Data & Privacy</a></li>
+            <li><a href="index.html#contact" class="btn-nav">Back to Home</a></li>
+        </ul>
+    </nav>
+
+    <!-- Terms of Service Content -->
+    <div class="policy-container">
+        <div class="policy-wrapper">
+            <div class="policy-header">
+                <h1>Terms of Service</h1>
+                <p><strong>Effective Date:</strong> 09 July 2026</p>
+            </div>
+            
+            <div class="policy-content">
+                <h2>1. Agreement to Terms</h2>
+                <p>By accessing or using the <strong>Doctor Digital Pad</strong> software, application, or website (collectively, the "Service"), operated by <strong>J Suraj Enterprises</strong>, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.</p>
+
+                <h2>2. Description of Service</h2>
+                <p>Doctor Digital Pad is a digital prescription and clinic management tool designed for healthcare professionals. The Service allows users to generate digital prescriptions, manage patient records locally, and send prescriptions to patients via third-party messaging services such as WhatsApp Business API and SMS.</p>
+
+                <h2>3. User Responsibilities and Compliance</h2>
+                <ul>
+                    <li><strong>Professional Credentialing:</strong> You represent and warrant that you are a legally registered and authorized medical practitioner or healthcare facility.</li>
+                    <li><strong>Patient Consent:</strong> You are solely responsible for obtaining explicit consent from your patients before sending them digital prescriptions or communications via WhatsApp or SMS using our platform.</li>
+                    <li><strong>Data Accuracy:</strong> You agree that all medical information, prescriptions, and dosages entered into the software are your sole responsibility. Doctor Digital Pad is merely a tool and does not provide medical advice.</li>
+                </ul>
+
+                <h2>4. Third-Party Integrations</h2>
+                <p>Our Service integrates with third-party platforms, including Meta (WhatsApp Business API) and MSG91 (SMS gateways). Your use of these features is subject to the respective terms and policies of these third parties. J Suraj Enterprises is not responsible for any downtime, delivery failures, or policy enforcements (such as number blocking) executed by these third-party services.</p>
+
+                <h2>5. Intellectual Property</h2>
+                <p>The Service and its original content, features, and functionality are and will remain the exclusive property of J Suraj Enterprises. "Doctor Digital Pad" and its associated logos are trademarks of J Suraj Enterprises. You may not copy, modify, or distribute our software without explicit written permission.</p>
+
+                <h2>6. Limitation of Liability</h2>
+                <p>In no event shall J Suraj Enterprises, nor its directors, employees, or partners, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
+
+                <h2>7. Account Suspension and Termination</h2>
+                <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.</p>
+
+                <h2>8. Governing Law</h2>
+                <p>These Terms shall be governed and construed in accordance with the laws of India, specifically under the jurisdiction of the courts in Jaipur, Rajasthan, without regard to its conflict of law provisions.</p>
+
+                <h2>9. Changes to Terms</h2>
+                <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms.</p>
+
+                <h2>10. Contact Us</h2>
+                <p>If you have any questions about these Terms, please contact us at:</p>
+                <ul>
+                    <li><strong>Business Name:</strong>Suraj Enterprises (Doctor Digital Pad)</li>
+                    <li><strong>Email:</strong> doctordigitalpad@gmail.com</li>
+                    <li><strong>Phone:</strong> +91 98299 99808</li>
+                    <li><strong>Address:</strong> Nawa City, Rajasthan, India</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="brand" style="margin-bottom: 20px;">
+                    <div class="logo-wrapper" style="background: white;">
+                        <img src="logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                    </div>
+                    <div class="logo-text" style="color: white; font-size: 20px;">Doctor Digital <span>Pad</span></div>
+                </div>
+                <p>Enterprise-grade digital prescription software designed for speed, security, and native WhatsApp integration.</p>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Contact & Support</h3>
+                <p><i class="fa-solid fa-building"></i> <strong>Suraj Enterprises</strong></p>
+                <p><i class="fa-solid fa-phone"></i> +91 98299 99808</p>
+                <p><i class="fa-solid fa-envelope"></i> doctordigitalpad@gmail.com</p>
+                <p><i class="fa-solid fa-location-dot"></i> Nawa City, Rajasthan, India</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Doctor Digital Pad. A software product of Suraj Enterprises. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
