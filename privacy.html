@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Doctor Digital Pad</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Premium SAAS Variables from your index.html */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --secondary: #0ea5e9;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden; }
+
+        /* Premium Glassmorphism Navbar */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+        .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        
+        .logo-wrapper {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            padding: 4px; background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+            border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease;
+        }
+        .logo-wrapper:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25); }
+        .logo-img { width: 55px; height: 55px; object-fit: contain; border-radius: 10px; }
+        .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; color: var(--text-dark); line-height: 1.1; }
+        .logo-text span { color: var(--primary); display: block; font-size: 16px; font-weight: 600; letter-spacing: 0; }
+        
+        .nav-links { list-style: none; display: flex; gap: 35px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-light); font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        
+        .btn-nav {
+            background: var(--primary); color: var(--white) !important;
+            padding: 10px 24px; border-radius: 8px; font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); transition: 0.3s;
+        }
+        .btn-nav:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
+
+        /* Privacy Policy Content Styling */
+        .policy-container {
+            padding: 140px 5% 80px; /* Top padding to account for fixed navbar */
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .policy-wrapper {
+            background: var(--white);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+        .policy-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .policy-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .policy-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .policy-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+        .policy-content p {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        .policy-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        .policy-content li {
+            margin-bottom: 10px;
+        }
+        .policy-content strong {
+            color: var(--text-dark);
+        }
+
+        /* Footer */
+        footer { background: #020617; color: #cbd5e1; padding: 80px 5% 30px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 50px; margin-bottom: 60px; }
+        .footer-col h3 { color: var(--white); font-size: 1.2rem; margin-bottom: 25px; font-weight: 600; }
+        .footer-col p { margin-bottom: 12px; line-height: 1.6; }
+        .footer-col i { width: 25px; color: var(--primary); }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid #334155; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .policy-wrapper { padding: 30px 20px; }
+            .policy-header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="brand">
+            <div class="logo-wrapper">
+                <img src="logo.png" alt="Logo" class="logo-img" id="mainLogo" onerror="this.style.display='none'">
+            </div>
+            <div class="logo-text">Doctor Digital <span>Pad Platform</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#how-it-works">Workflow</a></li>
+            <li><a href="index.html#features">Features</a></li>
+            <li><a href="index.html#security">Data & Privacy</a></li>
+            <li><a href="index.html#contact" class="btn-nav">Back to Home</a></li>
+        </ul>
+    </nav>
+
+    <!-- Privacy Policy Content -->
+    <div class="policy-container">
+        <div class="policy-wrapper">
+            <div class="policy-header">
+                <h1>Privacy Policy</h1>
+                <p><strong>Effective Date:</strong> 09 July 2026</p>
+            </div>
+            
+            <div class="policy-content">
+                <h2>1. Introduction</h2>
+                <p>Welcome to <strong>Doctor Digital Pad</strong>, a digital prescription software product by <strong>J Suraj Enterprises</strong>. Your privacy is critically important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (www.doctordigitalpad.com) or use our mobile and web applications. By using our services, you agree to the collection and use of information in accordance with this policy.</p>
+
+                <h2>2. Information We Collect</h2>
+                <p>We may collect personal identification information from Users in a variety of ways, including, but not limited to, when Users visit our site, register on the app, fill out a form, and in connection with other activities, services, features, or resources we make available.</p>
+                <ul>
+                    <li><strong>Doctor/Clinic Information:</strong> Name, email address, phone number, clinic address, and medical registration number required for account setup and prescription generation.</li>
+                    <li><strong>Patient Information:</strong> To facilitate digital prescriptions, you may input patient data (such as name, age, gender, contact number, and medical history). We process this data strictly to provide the service and generate prescriptions or WhatsApp/SMS notifications.</li>
+                </ul>
+
+                <h2>3. How We Use Collected Information</h2>
+                <p>J Suraj Enterprises uses the collected information for the following purposes:</p>
+                <ul>
+                    <li>To personalize user experience and improve our software platform.</li>
+                    <li>To send periodic emails, SMS, or WhatsApp messages regarding account updates, service changes, or tech support.</li>
+                    <li>To facilitate the delivery of digital prescriptions to patients via our integrated third-party APIs (like WhatsApp Business API and SMS gateways).</li>
+                    <li>To maintain legal and regulatory compliance.</li>
+                </ul>
+
+                <h2>4. Data Sharing and Third-Party Services</h2>
+                <p>We do not sell, trade, or rent users' personal identification information to others. We may share generic aggregated demographic information not linked to any personal identification information with our business partners.</p>
+                <p>We use third-party service providers (such as Meta for WhatsApp messaging and MSG91 for SMS delivery) to help us operate our business. These third parties have access to your personal information only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.</p>
+
+                <h2>5. Data Security</h2>
+                <p>We adopt appropriate data collection, storage, and processing practices and security measures to protect against unauthorized access, alteration, disclosure, or destruction of your personal information, username, password, transaction information, and data stored on our platform.</p>
+
+                <h2>6. User Rights</h2>
+                <p>You have the right to access, update, or delete the personal information we have on you. If you wish to exercise these rights, please contact us using the information provided below.</p>
+
+                <h2>7. Changes to This Privacy Policy</h2>
+                <p>J Suraj Enterprises has the discretion to update this privacy policy at any time. When we do, we will revise the updated date at the top of this page. We encourage Users to frequently check this page for any changes.</p>
+
+                <h2>8. Contact Us</h2>
+                <p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us at:</p>
+                <ul>
+                    <li><strong>Business Name:</strong> J Suraj Enterprises (Doctor Digital Pad)</li>
+                    <li><strong>Email:</strong> doctordigitalpad@gmail.com</li>
+                    <li><strong>Phone:</strong> +91 98299 99808</li>
+                    <li><strong>Address:</strong> Jaipur, Rajasthan, India</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="brand" style="margin-bottom: 20px;">
+                    <div class="logo-wrapper" style="background: white;">
+                        <img src="logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                    </div>
+                    <div class="logo-text" style="color: white; font-size: 20px;">Doctor Digital <span>Pad</span></div>
+                </div>
+                <p>Enterprise-grade digital prescription software designed for speed, security, and native WhatsApp integration.</p>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Contact & Support</h3>
+                <p><i class="fa-solid fa-building"></i> <strong>Suraj Enterprises</strong></p>
+                <p><i class="fa-solid fa-phone"></i> +91 98299 99808</p>
+                <p><i class="fa-solid fa-envelope"></i> doctordigitalpad@gmail.com</p>
+                <p><i class="fa-solid fa-location-dot"></i> Jaipur, Rajasthan, India</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Doctor Digital Pad. A software product of Suraj Enterprises. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
