@@ -13,7 +13,7 @@
     <style>
         :root {
             --primary: #1565C0; --secondary: #E65100; --bg: #f0f2f5; --white: #ffffff;
-            --text-dark: #1e293b; --text-light: #64748b; --border: #e2e8f0;
+            --text-dark: #1e293b; --text-light: #64748b; --border: #e2e8f0; --success: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text-dark); }
@@ -37,15 +37,20 @@
         .tab-content.active { display: block; }
 
         .user-card { background: var(--white); border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); overflow: hidden; }
-        .user-header { background: #e0f2fe; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .user-header h3 { color: var(--primary); font-size: 16px; }
+        .user-header { background: #e0f2fe; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        .user-header h3 { color: var(--primary); font-size: 16px; margin: 0; }
         
-        /* 🟢 Download DB Button Style */
-        .dl-db-btn { background: #10b981; color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-update { background: var(--primary); color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;}
+        .btn-update:hover { background: #0d47a1; }
+        .dl-db-btn { background: var(--success); color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;}
         .dl-db-btn:hover { background: #059669; }
 
+        .sub-header { background: #f1f5f9; padding: 10px 20px; font-weight: bold; font-size: 14px; color: #334155; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0; }
+
         .patient-list { padding: 0; list-style: none; display: block; }
-        .patient-item { padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .patient-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .patient-item:last-child { border-bottom: none; }
         .patient-info strong { display: block; font-size: 15px; color: var(--text-dark); margin-bottom: 4px; }
         .patient-info small { color: var(--text-light); font-size: 13px; }
         
@@ -111,10 +116,14 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // 🟢 Variables to store latest fetched data
+        let globalDoctorData = {};
+        let globalAssistantData = {};
+
         function login() {
             const id = document.getElementById("adminId").value.trim(); 
             const pass = document.getElementById("adminPass").value.trim();
-            if(id === "ddpddp" && pass === "Suraj@0909") {
+            if(id === "admin" && pass === "admin@123") {
                 document.getElementById("loginOverlay").style.display = "none";
                 document.getElementById("mainDashboard").style.display = "block";
                 fetchDataRealtime(); 
@@ -123,9 +132,7 @@
             }
         }
 
-        function logout() {
-            window.location.reload();
-        }
+        function logout() { window.location.reload(); }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -142,6 +149,20 @@
         function closePdf() {
             document.getElementById("pdfModal").style.display = "none";
             document.getElementById("pdfFrame").src = "";
+        }
+
+        // 🟢 Update / Refresh Button Logic
+        function forceUpdate(btnElement) {
+            let originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+            
+            // Re-render data from memory to give a refresh feel, Firebase is already real-time
+            setTimeout(() => {
+                renderDoctorCards(globalDoctorData);
+                renderAssistantCards(globalAssistantData);
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Updated';
+                setTimeout(() => { btnElement.innerHTML = originalText; }, 2000);
+            }, 800);
         }
 
         // 🟢 Database File Download Logic
@@ -168,6 +189,7 @@
             });
         }
 
+        // 🟢 Fetch Data Realtime
         function fetchDataRealtime() {
             db.collection("PrescriptionPDFs").orderBy("created_at", "desc")
             .onSnapshot((snapshot) => {
@@ -182,7 +204,7 @@
                     let asstId = data.assistant_id || "Unknown_Assistant";
                     let pPhone = data.patient_phone || "No Number";
                     let pName = data.patient_name || "Unknown Patient";
-                    let pAddress = data.patient_address || "No Address Added";
+                    let pAddress = data.patient_address || "No Address";
                     let vId = data.visit_id || "V1";
 
                     if (role === 'Doctor') {
@@ -193,8 +215,8 @@
                         if(!doctorData[docId][pPhone].visits.some(v => v.vId === vId)) {
                             doctorData[docId][pPhone].visits.push({ vId: vId, base64: data.pdf_base64 });
                         }
-                    } else {
-                        // Assistant Logic (Group by Assistant -> Doctor -> Patient)
+                    } else if (role === 'Assistant') {
+                        // Hierarchy: Assistant -> Doctor -> Patient
                         if (!assistantData[asstId]) assistantData[asstId] = {};
                         if (!assistantData[asstId][docId]) assistantData[asstId][docId] = {};
                         if (!assistantData[asstId][docId][pPhone]) {
@@ -203,12 +225,14 @@
                     }
                 });
 
+                globalDoctorData = doctorData;
+                globalAssistantData = assistantData;
                 renderDoctorCards(doctorData);
                 renderAssistantCards(assistantData);
             });
         }
 
-        // 🟢 DOCTOR RENDER: PDF + Details
+        // 🟢 RENDER DOCTOR CARDS (PDF View + Visits)
         function renderDoctorCards(dataObj) {
             const container = document.getElementById('doctorsTab');
             container.innerHTML = "";
@@ -219,7 +243,10 @@
                 <div class="user-card">
                     <div class="user-header">
                         <h3><i class="fa-solid fa-user-doctor"></i> Doctor ID: ${docId}</h3>
-                        <button class="dl-db-btn" onclick="downloadDB('${docId}')"><i class="fa-solid fa-cloud-arrow-down"></i> Sync & Download DB</button>
+                        <div class="action-buttons">
+                            <button class="btn-update" onclick="forceUpdate(this)"><i class="fa-solid fa-rotate-right"></i> Update</button>
+                            <button class="dl-db-btn" onclick="downloadDB('${docId}')"><i class="fa-solid fa-database"></i> Download DB</button>
+                        </div>
                     </div>
                     <ul class="patient-list">
                 `;
@@ -230,7 +257,7 @@
                         <li class="patient-item">
                             <div class="patient-info">
                                 <strong>${pData.name}</strong>
-                                <small><i class="fa-solid fa-phone"></i> ${pData.phone} &nbsp; | &nbsp; <i class="fa-solid fa-location-dot"></i> ${pData.address}</small>
+                                <small><i class="fa-solid fa-phone"></i> ${pData.phone} &nbsp;|&nbsp; <i class="fa-solid fa-location-dot"></i> ${pData.address}</small>
                             </div>
                             <div class="visits-wrap">${visitsHtml}</div>
                         </li>
@@ -241,7 +268,7 @@
             }
         }
 
-        // 🟢 ASSISTANT RENDER: NO PDF, Just Details
+        // 🟢 RENDER ASSISTANT CARDS (Assistant -> Doctor -> Patients | NO PDF)
         function renderAssistantCards(dataObj) {
             const container = document.getElementById('assistantsTab');
             container.innerHTML = "";
@@ -252,17 +279,29 @@
                 <div class="user-card">
                     <div class="user-header">
                         <h3><i class="fa-solid fa-headset"></i> Assistant ID: ${asstId}</h3>
-                        <button class="dl-db-btn" onclick="downloadDB('${asstId}')"><i class="fa-solid fa-cloud-arrow-down"></i> Sync & Download DB</button>
+                        <div class="action-buttons">
+                            <button class="btn-update" onclick="forceUpdate(this)"><i class="fa-solid fa-rotate-right"></i> Update</button>
+                            <button class="dl-db-btn" onclick="downloadDB('${asstId}')"><i class="fa-solid fa-database"></i> Download DB</button>
+                        </div>
                     </div>
                 `;
+                
+                // Assistant ke andar har ek Doctor ki list
                 for (const [docId, patients] of Object.entries(doctors)) {
-                    cardHtml += `<div style="background:#f8fafc; padding:10px 20px; font-weight:bold; font-size:14px; border-bottom:1px solid #e2e8f0; color:#475569;">Working for Doctor ID: ${docId}</div><ul class="patient-list">`;
+                    cardHtml += `
+                        <div class="sub-header">
+                            <i class="fa-solid fa-stethoscope"></i> Working for Doctor ID: User ${docId}
+                        </div>
+                        <ul class="patient-list">
+                    `;
+                    
+                    // Doctor ke andar saare patients
                     for (const [phone, pData] of Object.entries(patients)) {
                         cardHtml += `
                             <li class="patient-item">
                                 <div class="patient-info">
                                     <strong>${pData.name}</strong>
-                                    <small><i class="fa-solid fa-phone"></i> ${pData.phone} &nbsp; | &nbsp; <i class="fa-solid fa-location-dot"></i> ${pData.address}</small>
+                                    <small><i class="fa-solid fa-phone"></i> ${pData.phone} &nbsp;|&nbsp; <i class="fa-solid fa-location-dot"></i> ${pData.address}</small>
                                 </div>
                             </li>
                         `;
