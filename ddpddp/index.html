@@ -155,12 +155,14 @@
 
         // --- LOGIN LOGIC ---
         function login() {
-            const id = document.getElementById("adminId").value;
-            const pass = document.getElementById("adminPass").value;
+            // .trim() lagaya hai taaki galti se space aaye toh bhi login ho jaye
+            const id = document.getElementById("adminId").value.trim(); 
+            const pass = document.getElementById("adminPass").value.trim();
+            
             if(id === "ddpddp" && pass === "Suraj@0909") {
                 document.getElementById("loginOverlay").style.display = "none";
                 document.getElementById("mainDashboard").style.display = "block";
-                fetchDataRealtime(); // Data load karna shuru karein
+                fetchDataRealtime(); 
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
@@ -171,6 +173,7 @@
             document.getElementById("adminPass").value = "";
             document.getElementById("mainDashboard").style.display = "none";
             document.getElementById("loginOverlay").style.display = "flex";
+            document.getElementById("loginError").style.display = "none";
         }
 
         // --- TAB SWITCH LOGIC ---
@@ -207,23 +210,19 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     
-                    // 🟢 IMPORTANT: Hum maan rahe hain ki Flutter app se ye data aayega
-                    // Agar nahi aata, toh hum file_name se data nikalenge as fallback
-                    let role = data.role || 'Doctor'; // 'Doctor' or 'Assistant'
+                    let role = data.role || 'Doctor'; 
                     let userId = data.doctor_id || data.assistant_id || "Unknown ID";
                     let patientPhone = data.patient_phone || "Unknown Number";
-                    let patientName = data.patient_name || data.file_name.split(' V')[0] || "Unknown Patient";
-                    let visitId = data.visit_id || (data.file_name.includes(' V') ? 'V' + data.file_name.split(' V')[1].split(' ')[0] : 'V1');
+                    let patientName = data.patient_name || (data.file_name && data.file_name.includes(' V') ? data.file_name.split(' V')[0] : "Unknown Patient");
+                    let visitId = data.visit_id || (data.file_name && data.file_name.includes(' V') ? 'V' + data.file_name.split(' V')[1].split(' ')[0] : 'V1');
 
                     let targetObj = role === 'Assistant' ? assistantData : doctorData;
 
-                    // Data Structure Build Karna
                     if (!targetObj[userId]) targetObj[userId] = {};
                     if (!targetObj[userId][patientPhone]) {
                         targetObj[userId][patientPhone] = { name: patientName, phone: patientPhone, visits: [] };
                     }
                     
-                    // Duplicate visit rokne ke liye
                     let visitExists = targetObj[userId][patientPhone].visits.some(v => v.vId === visitId);
                     if(!visitExists) {
                         targetObj[userId][patientPhone].visits.push({
@@ -248,7 +247,8 @@
                 return;
             }
 
-            for (const [userId, patients]] of Object.entries(groupedData)) {
+            // 🟢 YAHAN EXTRA BRACKET KI GALTI THI JO THEEK KAR DI GAYI HAI
+            for (const [userId, patients] of Object.entries(groupedData)) {
                 let totalPatients = Object.keys(patients).length;
 
                 let cardHtml = `
@@ -261,7 +261,6 @@
                 `;
 
                 for (const [phone, pData] of Object.entries(patients)) {
-                    // Sort visits like V1, V2
                     pData.visits.sort((a,b) => a.vId.localeCompare(b.vId, undefined, {numeric: true}));
                     
                     let visitsHtml = pData.visits.map(v => 
